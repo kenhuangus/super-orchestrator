@@ -1,0 +1,5 @@
+docs/
+substack*.md
+*.draft.md
+.artifacts/
+
