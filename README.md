@@ -60,10 +60,26 @@ super-orchestrator/
 ├── references/
 │   ├── decomposition_matrix.md       # Decision tree for task sizing and DAG sequencing
 │   ├── subagent_templates.md         # System prompts for Explorer, Builder, Validator, Synthesizer
-│   └── coordination_protocol.md      # Structured reporting & steering message schemas
+│   ├── coordination_protocol.md      # Structured reporting & steering message schemas
+│   └── agent_integration_guide.md    # Guide for Claude Code, Codex, Cline, VS Code, Grok, etc.
 └── scripts/
     └── plan_task.py                  # CLI utility for checking file disjointness and worktrees
 ```
+
+---
+
+## 3. Multi-Agent Ecosystem Compatibility
+
+While originally engineered for **Google Antigravity (`agy`)**, the orchestration principles are runtime-agnostic. The protocol relies exclusively on Git worktrees, Markdown state tracking (`task_state.md`), and typed message exchanges.
+
+See the complete guide in [references/agent_integration_guide.md](references/agent_integration_guide.md) for detailed platform setups:
+
+- **Google Antigravity (`agy`)**: Discovered automatically via `skills/super-orchestrator/SKILL.md`. Spawns workers natively using `invoke_subagent(Workspace='branch')`.
+- **Anthropic Claude Code**: Installed under `~/.claude/skills/` or referenced in `CLAUDE.md`. Uses Claude Code's `Agent` tool or background bash sessions.
+- **OpenAI Codex / Codex CLI**: Declared in `AGENTS.md`. Coordinates tasks via CLI sub-processes or API swarms.
+- **Cline (VS Code)**: Configured via `.clinerules`. Shifts from *Architect* mode for planning to *Code* mode for worktree implementation.
+- **VS Code Copilot / Copilot Workspace**: Defined in `.github/copilot-instructions.md`. Directs `@workspace` agent planning.
+- **OpenCode, Meta Muse, xAI Grok Bot**: Ingested via system prompt or command runbooks. Uses shell execution to manage isolated worktrees under `.worktrees/`.
 
 ---
 
