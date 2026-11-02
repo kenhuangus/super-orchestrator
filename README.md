@@ -81,7 +81,11 @@ The orchestration principles are fully runtime-agnostic. The protocol relies exc
 | **OpenAI Codex / Codex CLI** | `AGENTS.md` / Custom Instructions | Sub-process invocation / Swarm | Git worktrees via terminal |
 | **Cline (VS Code)** | `.clinerules` | Custom Modes (Architect $\rightarrow$ Code) | MCP Worktree Server or Git CLI |
 | **VS Code Copilot / Workspace** | `.github/copilot-instructions.md` | Multi-File Task Planner / `@workspace` | Git branch isolation |
-| **OpenCode / Meta Muse / Grok** | System Prompt / Runbook markdown | Autonomous background jobs | Worktree branches via shell |
+| **OpenCode (OpenCodeInterpreter)** | `opencode.json` / System Prompt | Sub-process execution / Worker shells | Git worktrees via shell |
+| **Meta Muse (Code Agent)** | Tool Manifest / Agent Config | Asynchronous Task Queues | Container / Branch workspaces |
+| **xAI Grok Bot / Grok CLI** | System Prompt / Runbook markdown | Autonomous background jobs | Worktree branches via shell |
+| **Pi Agent (Personal AI Agent)** | `~/.pi/config.json` / Prompt | Subprocess / Worker Shell | Git worktrees via bash |
+| **Google Antigravity (`agy`)** | `skills/super-orchestrator/SKILL.md` | Native `invoke_subagent` | `Workspace: 'branch'` |
 
 #### 1. Anthropic Claude Code Setup
 Copy the skill to `~/.claude/skills/super-orchestrator/` and add to your `CLAUDE.md`:
@@ -102,6 +106,7 @@ For complex refactoring, multi-module features, or comprehensive test suites:
 - Before executing code edits, generate a structured decomposition plan in `task_state.md`.
 - For every parallel worker, provision a separate Git worktree under `.worktrees/`.
 - Never allow parallel write workers to touch overlapping files.
+- Run `python scripts/plan_task.py validate-dag --plan-json plan.json` to verify dependencies.
 ```
 
 #### 3. Cline (VS Code Autonomous Coding Agent)
@@ -111,7 +116,7 @@ When assigned a large or complex task:
 1. Switch to 'Architect' mode to evaluate file coupling and generate `task_state.md`.
 2. Use terminal commands to create isolated worktrees for subtasks:
    `git worktree add -b agent/<feature> .worktrees/<feature>`
-3. Execute implementation within the worktree directory.
+3. Switch to 'Code' mode within the worktree directory to perform implementation.
 4. Run `python scripts/plan_task.py check-overlap --plan-json <plan.json>` before merging.
 ```
 
@@ -123,22 +128,34 @@ Add the orchestration rules to `.github/copilot-instructions.md`:
 - Decompose tasks into Discovery (Explorer), Construction (Builder), and Verification (Validator).
 - Document active phases in `task_state.md`.
 - Restrict Builders to disjoint directory trees to avoid merge conflicts.
+- For parallel modifications, mandate branch isolation:
+  `git worktree add -b agent/<feature> .worktrees/<feature>`
 ```
 
-#### 5. OpenCode, Meta Muse, and xAI Grok Bot
-Pass `SKILL.md` directly via system prompt flags or automated shell execution:
-```bash
-# Provision isolated worktree
-git worktree add -b agent/auth-refactor .worktrees/auth-refactor
-
-# Run autonomous agent inside isolated worktree
-cd .worktrees/auth-refactor && run_agent --prompt "Implement JWT validation"
-
-# Merge and clean up
-cd ../.. && git merge agent/auth-refactor && git worktree remove .worktrees/auth-refactor
+#### 5. OpenCode (OpenCodeInterpreter)
+Configure `opencode.json` or pass system flags:
+```json
+{
+  "system_prompt_file": "path/to/super-orchestrator/SKILL.md",
+  "agent_mode": "orchestrator",
+  "worktree_root": ".worktrees"
+}
 ```
+Spawn worker sub-shells: `opencode --task "Implement API" --workdir .worktrees/api`.
 
-For full details, see [references/agent_integration_guide.md](references/agent_integration_guide.md).
+#### 6. Meta Muse
+Declare `super-orchestrator` in Muse's agent capabilities manifest, configuring file coupling checks before launching asynchronous worker queues in isolated container/branch worktrees.
+
+#### 7. xAI Grok Bot (Grok CLI)
+Inject `SKILL.md` via `grok --prompt-file path/to/super-orchestrator/SKILL.md`. Spawns background worker jobs for build/test processes while keeping the main chat turn responsive.
+
+#### 8. Pi Agent (Personal AI Terminal Agent)
+Configure `~/.pi/config.json` with single-operator mode. Pi Agent functions as the dialog partner for the human, turning natural-language goals into structured `task_state.md` contracts and delegating background execution to local worker sub-shells.
+
+#### 9. Google Antigravity (`agy` / Antigravity IDE)
+Install under `~/.gemini/antigravity-cli/skills/super-orchestrator/`. The Super Agent calls `invoke_subagent` with `Workspace: 'branch'` for Builders (auto-provisioning isolated worktrees) and `Workspace: 'inherit'` for Explorers, waking up reactively via `send_message`.
+
+For complete configuration templates and execution patterns, see [references/agent_integration_guide.md](references/agent_integration_guide.md).
 
 ---
 
