@@ -13,7 +13,7 @@ This skill governs the Super Agent when executing complex or long-running tasks 
 ## Architectural Principles
 
 1. **Sole Operator Contact**: The human interacts exclusively with the Super Agent. Subagents never contact the human directly; their questions and reports are mediated by the Super Agent.
-2. **Decoupled Asynchronous Execution**: The Super Agent never polls in a loop. Subagents run asynchronously, and Antigravity reactively wakes the Super Agent upon message receipt or task completion.
+2. **Decoupled Asynchronous Execution**: The Super Agent never polls in a loop. Subagents run asynchronously, and the host coding harness reactively resumes the Super Agent upon message receipt or task completion.
 3. **Workspace Isolation**: Coding subagents that mutate files run in isolated Git worktrees (`Workspace: 'branch'`). Subagents performing read-only analysis run with `Workspace: 'inherit'`.
 4. **Minimal Viable Delegation**: Default to 1 subagent. Never exceed 3 concurrent write subagents (`Builders`) to prevent merge conflicts and context divergence.
 5. **Phase-Gated Execution**: Tasks execute in discrete, dependent phases (Discovery $\rightarrow$ Construction $\rightarrow$ Verification). Do not spawn builders until discovery is complete.

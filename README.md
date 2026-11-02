@@ -1,6 +1,6 @@
 # Super Orchestrator Skill
 
-> Dynamic multi-agent decomposition and coordination protocol for long-horizon autonomous software engineering and research tasks in Google Antigravity (`agy`).
+> Dynamic multi-agent decomposition and coordination protocol for long-horizon autonomous software engineering and research tasks across Claude Code, OpenAI Codex, Cline, VS Code Copilot, OpenCode, and Antigravity.
 
 `super-orchestrator` is an agentic orchestration skill designed for a **Single Human $\leftrightarrow$ Single Super Agent $\leftrightarrow$ Multi-Subagent** operational model. It abstracts and generalizes the multi-agent control principles introduced in [DeepSeek Super Agent](https://github.com/deepseek-ai/dsh-superagent-prototype) into a standalone, lightweight agent skill that requires no proprietary runtime harnesses or enterprise ticketing databases.
 
@@ -47,7 +47,7 @@ flowchart TD
    - `Synthesizer`: Technical documentation, architectural diagrams, and final integration reporting.
 4. **Decoupled Asynchronous Protocol**:
    - Subagents emit typed reports: `progress`, `ready`, `blocked`, `failed`, or `handback`.
-   - The Super Agent never polls in a loop; Antigravity reactively resumes the parent turn when child events occur.
+   - The Super Agent never polls in a loop; modern agent harnesses reactively resume the parent turn when child events occur.
    - Subagents exceeding their mandate trigger an explicit `handback` rather than expanding scope unilaterally.
 
 ---
@@ -70,7 +70,7 @@ super-orchestrator/
 
 ## 3. Multi-Agent Ecosystem Compatibility
 
-While originally engineered for **Google Antigravity (`agy`)**, the orchestration principles are runtime-agnostic. The protocol relies exclusively on Git worktrees, Markdown state tracking (`task_state.md`), and typed message exchanges.
+The orchestration principles are fully runtime-agnostic. The protocol relies exclusively on Git worktrees, Markdown state tracking (`task_state.md`), and typed message exchanges.
 
 ### Compatibility & Integration Recipes
 
@@ -142,27 +142,41 @@ For full details, see [references/agent_integration_guide.md](references/agent_i
 
 ---
 
-## 4. Installation
+## 4. Installation & Platform Setup
 
-### In Google Antigravity (`agy`)
-Clone or copy this directory into your Antigravity skills path:
-
+### In Anthropic Claude Code
 ```bash
-# Global installation
-cp -r super-orchestrator ~/.gemini/antigravity-cli/skills/
-
-# Or workspace-specific installation
-mkdir -p .agents/skills/
-cp -r super-orchestrator .agents/skills/
+mkdir -p ~/.claude/skills/super-orchestrator
+cp -r * ~/.claude/skills/super-orchestrator/
 ```
 
-Once installed, Antigravity discovers the skill automatically via progressive disclosure.
+### In Google Antigravity (`agy`)
+```bash
+# Global installation
+cp -r . ~/.gemini/antigravity-cli/skills/super-orchestrator/
+
+# Or workspace-specific installation
+mkdir -p .agents/skills/super-orchestrator/
+cp -r * .agents/skills/super-orchestrator/
+```
+
+### In OpenAI Codex / Codex CLI
+Reference the runbook in your global `AGENTS.md`:
+```bash
+cat << 'EOF' >> ~/.codex/AGENTS.md
+# Super Orchestrator Protocol
+For multi-stage tasks, follow ~/.codex/skills/super-orchestrator/SKILL.md.
+EOF
+```
+
+### In Cline (VS Code)
+Symlink or copy the skill directory and add the `.clinerules` snippet from [references/agent_integration_guide.md](references/agent_integration_guide.md).
 
 ---
 
 ## 5. Usage
 
-Trigger the skill in natural language:
+Trigger the skill in natural language across any supported agent:
 
 ```text
 Using the super-orchestrator skill, audit our codebase for OWASP agentic AI vulnerabilities, 
@@ -178,7 +192,7 @@ The Super Agent will:
 
 ---
 
-## 5. References & Prior Art
+## 6. References & Prior Art
 
 - **DeepSeek AI (2026).** *Exploring Super-agent Design: Towards a More Autonomous Agent System.* [deepseek-ai/dsh-superagent-prototype](https://github.com/deepseek-ai/dsh-superagent-prototype).
 - **Ken Huang (2026).** *Harness Engineering: Design Patterns for Securing Long-Horizon Multi-Agent AI Systems.* Amazon Kindle.
@@ -186,6 +200,6 @@ The Super Agent will:
 
 ---
 
-## 6. License
+## 7. License
 
 MIT License. See [LICENSE](LICENSE) for details.
