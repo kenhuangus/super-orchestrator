@@ -72,18 +72,77 @@ super-orchestrator/
 
 While originally engineered for **Google Antigravity (`agy`)**, the orchestration principles are runtime-agnostic. The protocol relies exclusively on Git worktrees, Markdown state tracking (`task_state.md`), and typed message exchanges.
 
-See the complete guide in [references/agent_integration_guide.md](references/agent_integration_guide.md) for detailed platform setups:
+### Compatibility & Integration Recipes
 
-- **Google Antigravity (`agy`)**: Discovered automatically via `skills/super-orchestrator/SKILL.md`. Spawns workers natively using `invoke_subagent(Workspace='branch')`.
-- **Anthropic Claude Code**: Installed under `~/.claude/skills/` or referenced in `CLAUDE.md`. Uses Claude Code's `Agent` tool or background bash sessions.
-- **OpenAI Codex / Codex CLI**: Declared in `AGENTS.md`. Coordinates tasks via CLI sub-processes or API swarms.
-- **Cline (VS Code)**: Configured via `.clinerules`. Shifts from *Architect* mode for planning to *Code* mode for worktree implementation.
-- **VS Code Copilot / Copilot Workspace**: Defined in `.github/copilot-instructions.md`. Directs `@workspace` agent planning.
-- **OpenCode, Meta Muse, xAI Grok Bot**: Ingested via system prompt or command runbooks. Uses shell execution to manage isolated worktrees under `.worktrees/`.
+| Coding Agent | Integration Hook | Subagent Primitive | Workspace Isolation |
+| :--- | :--- | :--- | :--- |
+| **Google Antigravity (`agy`)** | `skills/super-orchestrator/SKILL.md` | Native `invoke_subagent` | `Workspace: 'branch'` |
+| **Anthropic Claude Code** | `~/.claude/skills/` or `CLAUDE.md` | `Agent` tool / Task Spawning | `git worktree add` via bash |
+| **OpenAI Codex / Codex CLI** | `AGENTS.md` / Custom Instructions | Sub-process invocation / Swarm | Git worktrees via terminal |
+| **Cline (VS Code)** | `.clinerules` | Custom Modes (Architect $\rightarrow$ Code) | MCP Worktree Server or Git CLI |
+| **VS Code Copilot / Workspace** | `.github/copilot-instructions.md` | Multi-File Task Planner / `@workspace` | Git branch isolation |
+| **OpenCode / Meta Muse / Grok** | System Prompt / Runbook markdown | Autonomous background jobs | Worktree branches via shell |
+
+#### 1. Anthropic Claude Code Setup
+Copy the skill to `~/.claude/skills/super-orchestrator/` and add to your `CLAUDE.md`:
+```markdown
+When executing multi-stage or long-running tasks:
+1. Load ~/.claude/skills/super-orchestrator/SKILL.md.
+2. Evaluate file coupling and maintain task state in `task_state.md`.
+3. Isolate code modifications using git worktrees: `git worktree add -b agent/<subtask> .worktrees/<subtask>`.
+4. Enforce the Rule of Three: maximum 3 concurrent worktree branches.
+```
+
+#### 2. OpenAI Codex / Codex CLI Setup
+In your global or project `AGENTS.md`:
+```markdown
+## Long-Horizon Multi-Agent Orchestration
+For complex refactoring, multi-module features, or comprehensive test suites:
+- Follow the 3-axis task decomposition matrix in `references/decomposition_matrix.md`.
+- Before executing code edits, generate a structured decomposition plan in `task_state.md`.
+- For every parallel worker, provision a separate Git worktree under `.worktrees/`.
+- Never allow parallel write workers to touch overlapping files.
+```
+
+#### 3. Cline (VS Code Autonomous Coding Agent)
+Create a `.clinerules` file in your repository root:
+```markdown
+When assigned a large or complex task:
+1. Switch to 'Architect' mode to evaluate file coupling and generate `task_state.md`.
+2. Use terminal commands to create isolated worktrees for subtasks:
+   `git worktree add -b agent/<feature> .worktrees/<feature>`
+3. Execute implementation within the worktree directory.
+4. Run `python scripts/plan_task.py check-overlap --plan-json <plan.json>` before merging.
+```
+
+#### 4. GitHub Copilot & VS Code Copilot Workspace
+Add the orchestration rules to `.github/copilot-instructions.md`:
+```markdown
+# Task Orchestration Rules
+- When asked to perform complex, multi-file engineering tasks, act as a Super Orchestrator.
+- Decompose tasks into Discovery (Explorer), Construction (Builder), and Verification (Validator).
+- Document active phases in `task_state.md`.
+- Restrict Builders to disjoint directory trees to avoid merge conflicts.
+```
+
+#### 5. OpenCode, Meta Muse, and xAI Grok Bot
+Pass `SKILL.md` directly via system prompt flags or automated shell execution:
+```bash
+# Provision isolated worktree
+git worktree add -b agent/auth-refactor .worktrees/auth-refactor
+
+# Run autonomous agent inside isolated worktree
+cd .worktrees/auth-refactor && run_agent --prompt "Implement JWT validation"
+
+# Merge and clean up
+cd ../.. && git merge agent/auth-refactor && git worktree remove .worktrees/auth-refactor
+```
+
+For full details, see [references/agent_integration_guide.md](references/agent_integration_guide.md).
 
 ---
 
-## 3. Installation
+## 4. Installation
 
 ### In Google Antigravity (`agy`)
 Clone or copy this directory into your Antigravity skills path:
@@ -101,7 +160,7 @@ Once installed, Antigravity discovers the skill automatically via progressive di
 
 ---
 
-## 4. Usage
+## 5. Usage
 
 Trigger the skill in natural language:
 
